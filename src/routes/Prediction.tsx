@@ -21,7 +21,7 @@ function Prediction() {
       </div>
 
       <div className="col-span-full row-span-2 row-start-2 grid grid-cols-subgrid gap-y-6 pt-8">
-        <div className="col-span-4 row-start-2 flex justify-center md:row-start-auto xl:col-span-6">
+        <div className="col-span-4 row-start-2 mb-24 flex justify-center md:row-start-auto md:mb-auto xl:col-span-6">
           <Card className="h-fit w-full max-w-[420px]">
             <CardHeader>
               <CardTitle>Medical Data Overview</CardTitle>
@@ -54,6 +54,11 @@ function Prediction() {
 
                   <TableRow>
                     <TableCell>Diastolic Blood Pressure</TableCell>
+                    <TableCell>69</TableCell>
+                  </TableRow>
+
+                  <TableRow>
+                    <TableCell>Blood Sugar</TableCell>
                     <TableCell>69</TableCell>
                   </TableRow>
 

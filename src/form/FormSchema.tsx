@@ -63,6 +63,18 @@ const pageTwoSchema = z.object({
       },
     )
     .transform((val) => Number(val)),
+  blood_sugar: z
+    .string()
+    .refine(
+      (val) => {
+        const num = Number(val);
+        return !isNaN(num) && num > 0;
+      },
+      {
+        message: "Must be a number and greater non-zero",
+      },
+    )
+    .transform((val) => Number(val)),
   ck_mb: z
     .string()
     .refine(

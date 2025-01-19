@@ -33,6 +33,7 @@ function Information() {
       heart_rate: "",
       systolic_bp: "",
       diastolic_bp: "",
+      blood_sugar: "",
       ck_mb: "",
       troponin: "",
     },
@@ -207,11 +208,19 @@ function Information() {
                       <CardHeader>
                         <CardTitle>Lab Test Results</CardTitle>
                         <CardDescription>
-                          Review CK-MB and Troponin levels for cardiac
-                          assessment.
+                          Review Blood Sugar, CK-MB, and Troponin levels for
+                          cardiac assessment.
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
+                        <InputText
+                          control={form.control}
+                          name={"blood_sugar"}
+                          formLabel={"Blood Sugar"}
+                          placeHolder={""}
+                          description={""}
+                          className="mt-2"
+                        />
                         <InputText
                           control={form.control}
                           name={"ck_mb"}
