@@ -5,7 +5,7 @@ import Information from "./routes/Information";
 import { useState } from "react";
 
 function App() {
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode] = useState(true);
 
   return (
     <div className={darkMode ? "dark" : undefined}>
