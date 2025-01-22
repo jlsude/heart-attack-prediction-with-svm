@@ -1,0 +1,16 @@
+{
+  "hosting": {
+    "site": "heart-attack-prediction-with-svm",
+    "source": "dist",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "frameworksBackend": {
+      "region": "asia-east1"
+    },
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
