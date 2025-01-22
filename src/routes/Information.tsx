@@ -54,7 +54,7 @@ function Information() {
       first_name: "",
       last_name: "",
       age: "",
-      sex: "0",
+      sex: "1",
 
       heart_rate: "",
       systolic_bp: "",
@@ -113,6 +113,7 @@ function Information() {
       localStorage.setItem("patientData", JSON.stringify(data));
       localStorage.setItem("predictionLabel", predictionLabel.toString());
       navigate("/prediction");
+      window.scrollTo(0, 0);
     } catch (error) {
       console.error("Error during inference:", error);
     }
@@ -147,7 +148,7 @@ function Information() {
             </div>
 
             <div className="col-span-full flex flex-col items-center p-3 md:col-span-4 md:col-start-5 xl:col-span-6 xl:col-start-7">
-              <div className="flex w-full max-w-[400px] flex-col rounded-md xl:max-w-full">
+              <div className="mb-4 flex w-full max-w-[400px] flex-col rounded-md xl:max-w-full">
                 <Card>
                   <CardHeader>
                     <CardTitle>Patient Data</CardTitle>
@@ -196,8 +197,8 @@ function Information() {
                           name={"sex"}
                           formLabel={"Sex"}
                           radioOptions={[
-                            { value: 0, label: "Male" },
-                            { value: 1, label: "Female" },
+                            { value: 1, label: "Male" },
+                            { value: 0, label: "Female" },
                           ]}
                           className="mt-2 text-text"
                           isRowOrietation={true}

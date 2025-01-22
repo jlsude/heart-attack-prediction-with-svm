@@ -79,6 +79,13 @@ function Prediction() {
                   </TableRow>
 
                   <TableRow>
+                    <TableCell>Sex</TableCell>
+                    <TableCell>
+                      {patientData?.sex === 1 ? `Male` : `Female`}
+                    </TableCell>
+                  </TableRow>
+
+                  <TableRow>
                     <TableCell>Heart Rate</TableCell>
                     <TableCell>{patientData?.heart_rate}</TableCell>
                   </TableRow>
@@ -149,7 +156,7 @@ function Prediction() {
             >
               New Prediction
             </Button>
-            <Button>Save Result</Button>
+            {/* <Button>Save Result</Button> */}
           </div>
         </div>
       </div>
