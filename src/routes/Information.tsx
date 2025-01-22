@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
+import * as ort from "onnxruntime-web";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
@@ -11,16 +12,41 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardFooter,
 } from "@/components/ui/card";
 import { useNavigate } from "react-router";
 import { pageOneSchema, pageTwoSchema } from "@/form/FormSchema";
+import ecgThumbnail from "/ecg-monitor.png";
+
+async function loadModel() {
+  const modelPath = "/svm_model.onnx"; // Path relative to the public folder
+  try {
+    const modelSession = await ort.InferenceSession.create(modelPath);
+    console.log("ONNX model loaded successfully!", modelSession);
+    return modelSession;
+  } catch (error) {
+    console.error("Failed to load the ONNX model:", error);
+  }
+}
 
 function Information() {
   const [currentPage, setCurrentPage] = useState(0);
+  const [modelSession, setModelSession] = useState<ort.InferenceSession | null>(
+    null,
+  );
   const navigate = useNavigate();
 
   const formSchema = pageOneSchema.merge(pageTwoSchema);
+
+  useEffect(() => {
+    const loadModelAsync = async () => {
+      const session = await loadModel();
+      if (session) {
+        setModelSession(session);
+      }
+    };
+
+    loadModelAsync();
+  }, []);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -28,15 +54,32 @@ function Information() {
       first_name: "",
       last_name: "",
       age: "",
-      sex: "0",
+      sex: "1",
 
       heart_rate: "",
       systolic_bp: "",
       diastolic_bp: "",
+      blood_sugar: "",
       ck_mb: "",
       troponin: "",
     },
   });
+
+  const prepareInput = (data: any) => {
+    const inputValues = [
+      parseFloat(data.age),
+      parseFloat(data.sex),
+      parseFloat(data.heart_rate),
+      parseFloat(data.systolic_bp),
+      parseFloat(data.diastolic_bp),
+      parseFloat(data.blood_sugar),
+      parseFloat(data.ck_mb),
+      parseFloat(data.troponin),
+    ];
+    return {
+      input: new ort.Tensor("float32", Float32Array.from(inputValues), [1, 8]),
+    };
+  };
 
   const handleNextPage = async () => {
     const isValid = await form.trigger([
@@ -50,10 +93,30 @@ function Information() {
     }
   };
 
-  const onSubmit = (data: any) => {
-    console.log(data);
+  const onSubmit = async (data: any) => {
+    if (!modelSession) {
+      console.error("Model session is not initialized");
+      return;
+    }
 
-    navigate("/prediction");
+    try {
+      const feeds = prepareInput(data);
+      const results = await modelSession.run(feeds);
+      console.log("Inference results:", results);
+
+      const predictionLabel = Number(results.label.data[0]);
+      //const predictionProbabilities = results.probabilities.data;
+
+      console.log("Prediction Label:", predictionLabel);
+      //console.log("Prediction Probabilities:", predictionProbabilities);
+
+      localStorage.setItem("patientData", JSON.stringify(data));
+      localStorage.setItem("predictionLabel", predictionLabel.toString());
+      navigate("/prediction");
+      window.scrollTo(0, 0);
+    } catch (error) {
+      console.error("Error during inference:", error);
+    }
   };
 
   return (
@@ -75,11 +138,17 @@ function Information() {
         <>
           <div className="col-span-full row-span-2 row-start-2 mt-4 grid grid-flow-row grid-cols-subgrid grid-rows-subgrid">
             <div className="col-span-4 col-start-1 hidden justify-center md:flex xl:col-span-6 xl:col-start-1">
-              <div className="h-full w-[300px] rounded-xl bg-secondary"></div>
+              <div className="h-full w-[300px] overflow-hidden rounded-xl bg-secondary">
+                <img
+                  className="h-full w-full"
+                  src={ecgThumbnail}
+                  alt="ecg-thumbnail"
+                />
+              </div>
             </div>
 
             <div className="col-span-full flex flex-col items-center p-3 md:col-span-4 md:col-start-5 xl:col-span-6 xl:col-start-7">
-              <div className="flex w-full max-w-[400px] flex-col rounded-md xl:max-w-full">
+              <div className="mb-4 flex w-full max-w-[400px] flex-col rounded-md xl:max-w-full">
                 <Card>
                   <CardHeader>
                     <CardTitle>Patient Data</CardTitle>
@@ -128,8 +197,8 @@ function Information() {
                           name={"sex"}
                           formLabel={"Sex"}
                           radioOptions={[
-                            { value: 0, label: "Male" },
-                            { value: 1, label: "Female" },
+                            { value: 1, label: "Male" },
+                            { value: 0, label: "Female" },
                           ]}
                           className="mt-2 text-text"
                           isRowOrietation={true}
@@ -207,11 +276,19 @@ function Information() {
                       <CardHeader>
                         <CardTitle>Lab Test Results</CardTitle>
                         <CardDescription>
-                          Review CK-MB and Troponin levels for cardiac
-                          assessment.
+                          Review Blood Sugar, CK-MB, and Troponin levels for
+                          cardiac assessment.
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
+                        <InputText
+                          control={form.control}
+                          name={"blood_sugar"}
+                          formLabel={"Blood Sugar"}
+                          placeHolder={""}
+                          description={""}
+                          className="mt-2"
+                        />
                         <InputText
                           control={form.control}
                           name={"ck_mb"}
