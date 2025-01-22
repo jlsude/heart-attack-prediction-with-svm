@@ -21,7 +21,7 @@ function Landing() {
               rel="noopener noreferrer"
               className="underline underline-offset-1"
             >
-              Learn more about the SVM model
+              Learn more about the SVM model and the dataset used
             </a>
           </small>
         </p>
